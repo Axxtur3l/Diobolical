@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect
 
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 
 import pymysql
 import pymysql.cursors
@@ -9,6 +9,8 @@ login_manager = LoginManager()
 
 app = Flask(__name__)
 login_manager.init_app(app)
+
+app.config['SECRET_KEY'] = 'something_random'
 
 class User:
     def __init__(self, id, username, banned):
@@ -50,26 +52,61 @@ def user_loader(user_id):
 def index():
     return render_template("home.html.jinja")
 
-@app.route('/post')
+@app.route('/feed')
+@login_required
 def post_feed():
 
     cursor = connection.cursor()
 
     cursor.execute("SELECT * FROM `Posts` ORDER BY `timestamp`")
-
     results = cursor.fetchall()
+
     return render_template(
     "posts.html.jinja",
     posts = results
 )
 
-@app.route('/sign-in')
+@app.route('/sign-out')
+def sign_out():
+    logout_user()
+
+    return redirect('/sign-in')
+
+
+@app.route('/sign-in', methods = ['POST','GET'])
 def sign_in():
-    return render_template("sign_in.html.jinja")
+    if current_user.is_authenticated:
+        return redirect('/feed')
+
+    if request.method == 'POST':
+        cursor = connection.cursor()
+
+        cursor.execute(f"SELECT * FROM `Users` WHERE `Username` = ' + {request.form['username']}'")
+
+        result = cursor.fetchone()
+
+        if result is None:
+            return render_template("sign_in.html.jinja")
+        
+        if request.form['password'] == result ['password']:
+            User = User(result['ID'], result['username'], result['banned'])
+
+            login_user(User)
+
+            return redirect('/feed')
+
+        else:
+            return render_template("sign_in.html.jinja")
+    
+    elif request.method == 'GET':
+        return render_template("sign_in.html.jinja")
 
 
 @app.route('/sign-up', methods=['POST', 'GET'])
 def sign_up():
+    if current_user.is_authenticated:
+        return redirect('/feed')
+
     if request.method == 'POST':
        cursor = connection.cursor()
 
