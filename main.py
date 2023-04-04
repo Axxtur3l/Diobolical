@@ -66,6 +66,28 @@ def post_feed():
     posts = results
 )
 
+@app.route('/post')
+@login_required
+def create_post():
+    cursor = connection.cursor()
+
+    photo = request.files['photo']
+
+    file_name = photo.filename # my_photo.jpg
+
+    file_extension = file_name.split('.')[-1]
+
+    if file_extension in  ['jpg', 'jpeg', 'png', 'gif']:
+        photo.save('media/posts/' + file_name)
+    else:
+        raise Exception('Invalid file type')
+
+    user_id = current_user.id
+
+    cursor.execute("""INSERT INTO `Posts` (`user_id`, `post_text`, `post_image`) VALUES (%s, %s, %s)""", (request.form['post_text'], file_name, user_id))
+
+    return redirect('/feed')
+
 @app.route('/sign-out')
 def sign_out():
     logout_user()
