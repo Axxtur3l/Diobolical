@@ -151,6 +151,16 @@ def sign_up():
        return redirect ('/posts')
     elif request.method == 'GET':
         return render_template("sign_up.html.jinja")
+    
+@app.route('/profile/<username>')
+def user_profile(username):
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM `Users` WHERE `Username` = %s", (username))
+
+    result = cursor.fetchone()
+
+    return render_template("user_profile.html.jinja", user = result)
 
 
 if __name__=='__main__':
