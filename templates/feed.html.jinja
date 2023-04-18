@@ -9,7 +9,25 @@
   <body>
     <main class="container">
     <h1>Wsg {{current_user.username}}</h1>
+    <form action = "/post" method = "POST"
+    enctype = "multipart/form-data"
+    >
+    
+    <textarea name = "Post"></textarea>
+
+    <input type = "File" style = "width: 200px; margin: 5px;">
+    <input type = "Submit" value = "submit" style = "width: 200px; margin: 5px;">
+
+    </form>
     {% for post in posts %}
+    <div class = "border mt - 3">
+        <p>{{post['username']}}</p>
+        <p>{{post['post_text']}}</p>
+        <p>{{post['Date'].strftime("%b - %d - %Y")}}</p>
+        <img src = "/media/posts/{{post['post_image']}}" height = "560" width = "600">
+
+    </div>
+    
     {% endfor %}
   <div class="mb-3">
   <label for="formFile" class="form-label">Default file input example</label>

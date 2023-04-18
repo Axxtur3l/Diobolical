@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, send_from_directory, abort
 
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 
@@ -160,8 +160,27 @@ def user_profile(username):
 
     result = cursor.fetchone()
 
-    return render_template("user_profile.html.jinja", user = result)
+    if result is None:
+        abort(404)
 
+    cursor.close()
+
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * from `Posts` WHERE `user_id` = %s", (result['id']))
+
+    post_result = cursor.fetchall()
+
+
+    return render_template(
+        "user_profile.html.jinja", 
+        user = result,
+        posts = post_result
+    )
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('error_status.html.jinja'),404
 
 if __name__=='__main__':
     app.run(debug=True)
