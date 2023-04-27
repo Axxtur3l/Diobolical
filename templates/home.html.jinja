@@ -1,29 +1,84 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Diobolical</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <title>EKKOSTASIS</title>
+    <link href="cover.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <style>
+    /*
+ * Globals
+ */
+/* Custom default button */
+.btn-light,
+.btn-light:hover,
+.btn-light:focus {
+  color: #d5dbe2;
+  text-shadow: none; /* Prevent inheritance from `body` */
+}
+/*
+ * Base structure
+ */
+body {
+  text-shadow: 0 .05rem .1rem rgba(135, 179, 210, 0.462);
+  box-shadow: inset 0 0 5rem rgba(178, 216, 253, 0.985);
+}
+.cover-container {
+  max-width: 50em;
+}
+/*
+ * Header
+ */
+.nav-masthead .nav-link {
+  color: rgba(129, 169, 207, 0.776);
+  border-bottom: .10rem solid transparent;
+}
+.nav-masthead .nav-link:hover,
+.nav-masthead .nav-link:focus {
+  border-bottom-color: rgb(159, 184, 237);
+}
+.nav-masthead .nav-link + .nav-link {
+  margin-left: 1rem;
+}
+.nav-masthead .active {
+  color: #6883aabc;
+  border-bottom-color: #fff;
+}
+    </style>
   </head>
- <body>
-    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-      <div class="col-md-3 mb-2 mb-md-0">
-        <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-          <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
-        </a>
-      </div>
+  <body class="d-flex h-100 text-center text-bg-dark">
+    
+<div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+  <header class="mb-auto">
+    <div>
+      <h3 class="float-md-start mb-0">EKKOSTASIS</h3>
+      <nav class="nav nav-masthead justify-content-center float-md-end">
+        <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="/">♡ Home ♡</a>
+        <a class="nav-link fw-bold py-1 px-0" href="/feed">♡ Feed ♡</a>
+        
+      </nav>
+    </div>
+  </header>
 
-      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
-        <li><a href="/feed" class="nav-link px-2">Feed</a></li>
-        <li><a href="/profile/" class="nav-link px-2">Profile</a></li>
-      </ul>
+  <main class="px-3">
+    <h1>Entering Ekkostasis....</h1>
+    <p>Searching the universes....</p>
+    <h3>♡ About ♡</h3>
+    <h6>Enter our realm and become part of a community where the ordinary rules of reality no longer apply. Ekkostasis is not for the faint-hearted, but for those who dare to explore the unknown and embrace the darkness that lies within. 
+</h6>
+    <p class="lead"></p>
+    <p class="lead">
+      <a href="/sign-in" class="btn btn-lg btn-light fw-bold border-white bg-white">♡Sign-in♡</a>
+      <p> Signed in already? Go straight to the feed!</p>
+    </p>
+  </main>
 
-      <div class="col-md-3 text-end">
-        <a href="/sign-in" class="btn btn-outline-primary me-2">Login</a>
-        <a href="/sign-up" class="btn btn-primary">Sign-up</a>
-      </div>
-    </header>
+  <footer class="mt-auto text-white-50">
+  </footer>
+</div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
   </body>
-</html> 
+</html>
