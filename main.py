@@ -89,11 +89,6 @@ def create_post():
 def send_media(path):
     return send_from_directory('media', path)
 
-@app.route('/sign-out')
-def sign_out():
-    logout_user()
-
-    return redirect('/sign-in')
 
 
 @app.route("/sign-in", methods=['POST', 'GET'])
