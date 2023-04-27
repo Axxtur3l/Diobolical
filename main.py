@@ -25,15 +25,6 @@ class User:
         return str(self.id)
 
 
-connection = pymysql.connect(
-    host='10.100.33.60',
-    user='agrenardo',
-    password='220279616',
-    database='agrenardo_socialmedia',
-    cursorclass=pymysql.cursors.DictCursor,
-    autocommit=True 
-)
-
 @login_manager.user_loader
 def user_loader(user_id):
     cursor = connection.cursor()
@@ -52,19 +43,25 @@ def user_loader(user_id):
 def index():
     return render_template("home.html.jinja")
 
-@app.route('/feed')
+connection = pymysql.connect(
+    host='10.100.33.60',
+    user='agrenardo',
+    password='220279616',
+    database='agrenardo_socialmedia',
+    cursorclass=pymysql.cursors.DictCursor,
+    autocommit=True 
+)
+
+@app.route("/feed")
 @login_required
-def post_feed():
+def post():
+    cursor=connection.cursor()
 
-    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM `Posts` JOIN `Users` ON `Posts`.`user_id` = `Users`.`id` ORDER BY `date` DESC;")
 
-    cursor.execute("SELECT * FROM `Posts` ORDER BY `timestamp`")
     results = cursor.fetchall()
 
-    return render_template(
-    "posts.html.jinja",
-    posts = results
-)
+    return render_template("post.html.jinja", posts = results)
 
 @app.route('/post')
 @login_required
@@ -88,6 +85,10 @@ def create_post():
 
     return redirect('/feed')
 
+@app.get('/media/<path:path>')
+def send_media(path):
+    return send_from_directory('media', path)
+
 @app.route('/sign-out')
 def sign_out():
     logout_user()
@@ -95,60 +96,70 @@ def sign_out():
     return redirect('/sign-in')
 
 
-@app.route('/sign-in', methods = ['POST','GET'])
+@app.route("/sign-in", methods=['POST', 'GET'])
 def sign_in():
     if current_user.is_authenticated:
         return redirect('/feed')
-
     if request.method == 'POST':
         cursor = connection.cursor()
-
         cursor.execute(f"SELECT * FROM `Users` WHERE `Username` = ' + {request.form['username']}'")
 
         result = cursor.fetchone()
 
         if result is None:
-            return render_template("sign_in.html.jinja")
-        
-        if request.form['password'] == result ['password']:
-            User = User(result['ID'], result['username'], result['banned'])
+            return render_template("sign-in.html.jinja")
 
-            login_user(User)
+        if request.form['password'] == result['password']:
+            user = User(result['id'], result['username'], result['banned'])
+
+            login_user(user)
 
             return redirect('/feed')
-
         else:
             return render_template("sign_in.html.jinja")
+
+
+
+        return request.form
     
     elif request.method == 'GET':
         return render_template("sign_in.html.jinja")
+    
+@app.route('/sign-out')
+def sign_out():
+    logout_user()
+
+    return redirect('/sign-in')
 
 
-@app.route('/sign-up', methods=['POST', 'GET'])
+@app.route("/sign-up", methods=['POST', 'GET'])
 def sign_up():
     if current_user.is_authenticated:
         return redirect('/feed')
-
     if request.method == 'POST':
-       cursor = connection.cursor()
+        #handle signup
+        cursor = connection.cursor()
 
-       photo = request.files['photo']
+        profile = request.files['picture']
+        file_name = profile.filename
+        file_extension = file_name.split('.')[-1]
 
-       file_name = photo.filename # my_photo.jpg
+        if file_extension in ['jpg', 'jpeg', 'png', 'gif']:
+            profile.save('media/users/' + file_name)
+        else:
+            raise Exception('invalid file type')
 
-       file_extension = file_name.split('.')[-1]
 
-       if file_extension in  ['jpg', 'jpeg', 'png', 'gif']:
-           photo.save('media/users/' + file_name)
-       else:
-           raise Exception('Invalid file type')
-
-       cursor.execute("""
+        cursor.execute("""
            INSERT INTO `Users` (`birthday`, `username`, `email`, `display_name`, `password`, `bio`, `photo`)
            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """, (request.form['birthday'], request.form['username'], request.form['email'], request.form['display_name'], request.form['password'], request.form['bio'], file_name))
 
-       return redirect ('/posts')
+        return redirect('/sign-in')
+
+
+
+        return request.form
     elif request.method == 'GET':
         return render_template("sign_up.html.jinja")
     
