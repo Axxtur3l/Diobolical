@@ -57,11 +57,11 @@ connection = pymysql.connect(
 def post():
     cursor=connection.cursor()
 
-    cursor.execute("SELECT * FROM `Posts` JOIN `Users` ON `Posts`.`user_id` = `Users`.`id` ORDER BY `date` DESC;")
+    cursor.execute("SELECT * FROM `Posts` JOIN `Users` ON `Posts`.`user_id` = `Users`.`id` ORDER BY `Timestamp` DESC;")
 
     results = cursor.fetchall()
 
-    return render_template("post.html.jinja", posts = results)
+    return render_template("feed.html.jinja", posts = results)
 
 @app.route('/post')
 @login_required
@@ -97,15 +97,17 @@ def sign_in():
         return redirect('/feed')
     if request.method == 'POST':
         cursor = connection.cursor()
-        cursor.execute(f"SELECT * FROM `Users` WHERE `Username` = ' + {request.form['username']}'")
+        cursor.execute(f"SELECT * FROM `Users` WHERE `Username` = '{request.form['username']}'")
 
         result = cursor.fetchone()
 
         if result is None:
             return render_template("sign_in.html.jinja")
+        
+        property(result)
 
         if request.form['password'] == result['password']:
-            user = User(result['id'], result['username'], result['banned'])
+            user = User(result['ID'], result['username'], result['banned'])
 
             login_user(user)
 
