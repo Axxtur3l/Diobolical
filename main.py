@@ -102,7 +102,7 @@ def sign_in():
         result = cursor.fetchone()
 
         if result is None:
-            return render_template("sign-in.html.jinja")
+            return render_template("sign_in.html.jinja")
 
         if request.form['password'] == result['password']:
             user = User(result['id'], result['username'], result['banned'])
