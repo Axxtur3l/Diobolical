@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, send_from_directory, abort
+from flask import Flask, render_template, request, redirect, send_from_directory, abort, g
 
 from flask_login import LoginManager, login_required, login_user, current_user, logout_user
 
@@ -27,7 +27,7 @@ class User:
 
 @login_manager.user_loader
 def user_loader(user_id):
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
 
     cursor.execute("SELECT * from `Users` WHERE `ID` = " + user_id)
 
@@ -43,8 +43,10 @@ def user_loader(user_id):
 def index():
     return render_template("home.html.jinja")
 
-connection = pymysql.connect(
-    host='10.100.33.60',
+
+def connect_db():
+    return pymysql.connect(
+    host="10.100.33.60",
     user='agrenardo',
     password='220279616',
     database='agrenardo_socialmedia',
@@ -52,10 +54,22 @@ connection = pymysql.connect(
     autocommit=True 
 )
 
+def get_db():
+    '''Opens a new database connection per request.'''        
+    if not hasattr(g, 'db'):
+        g.db = connect_db()
+    return g.db    
+
+@app.teardown_appcontext
+def close_db(error):
+    '''Closes the database connection at the end of request.'''    
+    if hasattr(g, 'db'):
+        g.db.close() 
+
 @app.route("/feed")
 @login_required
 def post():
-    cursor=connection.cursor()
+    cursor = get_db().cursor()
 
     cursor.execute("SELECT * FROM `Posts` JOIN `Users` ON `Posts`.`user_id` = `Users`.`id` ORDER BY `Timestamp` DESC;")
 
@@ -66,7 +80,7 @@ def post():
 @app.route('/post')
 @login_required
 def create_post():
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
 
     photo = request.files['photo']
 
@@ -96,7 +110,7 @@ def sign_in():
     if current_user.is_authenticated:
         return redirect('/feed')
     if request.method == 'POST':
-        cursor = connection.cursor()
+        cursor = get_db().cursor()
         cursor.execute(f"SELECT * FROM `Users` WHERE `Username` = '{request.form['username']}'")
 
         result = cursor.fetchone()
@@ -135,7 +149,7 @@ def sign_up():
         return redirect('/feed')
     if request.method == 'POST':
         #handle signup
-        cursor = connection.cursor()
+        cursor = get_db().cursor()
 
         profile = request.files['picture']
         file_name = profile.filename
@@ -162,7 +176,7 @@ def sign_up():
     
 @app.route('/profile/<username>')
 def user_profile(username):
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
 
     cursor.execute("SELECT * FROM `Users` WHERE `Username` = %s", (username))
 
@@ -173,7 +187,7 @@ def user_profile(username):
 
     cursor.close()
 
-    cursor = connection.cursor()
+    cursor = get_db().cursor()
 
     cursor.execute("SELECT * from `Posts` WHERE `user_id` = %s", (result['id']))
 
