@@ -71,9 +71,9 @@ body {
     </form>
     {% for post in posts %}
         <div class="border mt-5">
-        <p>{{post['username']}}</p>
+        <p>{{post['username'] | escape }}</p>
         <p>Date: {{post['date'].strftime("%A, %b - %d - %Y")}}</p>
-        <p>{{post['post_feed']}}</p>
+        <p>{{post['post_feed'] | escape }}</p>
             <img src="/media/posts/{{post['post_image']}}" height="500" width="760">
             <p>shares: {{post['share_amount']}}</p>
         </div>

@@ -111,7 +111,7 @@ def sign_in():
         return redirect('/feed')
     if request.method == 'POST':
         cursor = get_db().cursor()
-        cursor.execute(f"SELECT * FROM `Users` WHERE `Username` = '{request.form['username']}'")
+        cursor.execute("SELECT * FROM `Users` WHERE `Username` = %s'{request.form['username']}'")
 
         result = cursor.fetchone()
 
