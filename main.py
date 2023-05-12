@@ -29,7 +29,7 @@ class User:
 def user_loader(user_id):
     cursor = get_db().cursor()
 
-    cursor.execute("SELECT * from `Users` WHERE `ID` = " + user_id)
+    cursor.execute("SELECT * from `Users` WHERE `ID` = %s" + user_id)
 
     result = cursor.fetchone()
 
